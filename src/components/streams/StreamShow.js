@@ -1,53 +1,54 @@
-import React, { useEffect, useRef } from 'react'
-import { connect } from 'react-redux'
-import { fetchStream } from '../../actions'
-import { FlvJs as flv} from 'flv.js'
-
-const StreamShow = (props) => {
-
-  const {id} = props.match.params
-
+import React, { useRef, useEffect } from "react";
+import flv from "flv.js";
+import { fetchStream } from "../../actions";
+import { useDispatch, useSelector } from "react-redux";
+ 
+const StreamShow = ({ match }) => {
+  const dispatch = useDispatch();
   const videoRef = useRef();
+ 
+  const stream = useSelector((state) => state.streams[match.params.id]);
+ 
+  //TODO fetching the stream on componentDidMount
+  useEffect(() => {
+    dispatch(fetchStream(match.params.id));
+  }, [dispatch, match.params.id]);
+ 
+  //TODO setting up flv player
+  useEffect(() => {
+    const buildPlayer = () => {
+      if ( !stream) {
+        return;
+      }
+      const player = flv.createPlayer({
+        type: "flv",
+        url: `http://localhost:8000/live/${match.params.id}.flv`,
+      });
+ 
+      player.attachMediaElement(videoRef.current);
+      player.load();
+    };
+    buildPlayer();
 
-  
-  console.log(props)
-  useEffect(()=>{
-    props.fetchStream(id)
-  },[])
+    return (player) => {
+      if (player) {
+        player.destroy();
+      }
+    };
 
-  
 
-  const renderContent =()=>{
-    if(props.stream){ 
-      const {title, description} = props.stream
-      return(
-        <>
-        <video ref={videoRef} style={{width:'100%'}} controls />
-        <div className='ui big header'>{title}</div>
-        <div className='ui content'>{description}</div>
-        </>        
-      )
-    }
-    else{
-      <div className="ui active inline loader"></div>
-    }
+  }, [stream, match.params.id]);
+ 
+  if (!stream) {
+    return <div>Loading...</div>;
   }
-  
-
   return (
-    <div className='ui placeholder segment'>
-     {renderContent()}
+    <div>
+      <video ref={videoRef} style={{width:'100%'}} controls={true} />
+      <h1>{stream.title}</h1>
+      <h5>{stream.description}</h5>
     </div>
-  )
-}
-
-
-const mapStateToProps = (state,ownProps) =>{
-  return{
-    stream: state.streams[ownProps.match.params.id]
-  }
-}
-
-
-
-export default connect(mapStateToProps, {fetchStream}) (StreamShow)
+  );
+};
+ 
+export default StreamShow;
