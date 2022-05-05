@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
 import { fetchStream } from '../../actions'
-
+import { FlvJs as flv} from 'flv.js'
 
 const StreamShow = (props) => {
 
   const {id} = props.match.params
+
+  const videoRef = useRef();
 
   
   console.log(props)
@@ -20,6 +22,7 @@ const StreamShow = (props) => {
       const {title, description} = props.stream
       return(
         <>
+        <video ref={videoRef} style={{width:'100%'}} controls />
         <div className='ui big header'>{title}</div>
         <div className='ui content'>{description}</div>
         </>        
