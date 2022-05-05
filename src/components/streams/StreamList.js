@@ -14,7 +14,7 @@ const StreamList = (props) => {
       if (stream.userId === props.currentUserId) {
         return (
           <div className="ui right floated content">
-            <Link to={`/streams/edit/${stream.id}`} className="ui button primary">Edit</Link>
+            <Link to={`/streams/edit/${stream.id}`}className="ui button primary">Edit</Link>
             <Link to={`/streams/delete/${stream.id}`} className="ui button negative">Delete</Link>
           </div>
         );
@@ -29,7 +29,7 @@ const StreamList = (props) => {
           <div className=" ui centered" >{renderAdmin(stream)}</div>
           <i className="huge middle aligned icon camera" />
           <div className="middle aligned content">
-            <div className="ui header">{stream.title}</div>
+            <Link to={`/streams/${stream.id}`} className="ui header">{stream.title}</Link>
             <div className="ui description">{stream.description}</div> 
           
           </div> 
